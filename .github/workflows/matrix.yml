@@ -1,0 +1,42 @@
+name: Using Matrix for node 14, 16 and 18.
+
+on: push
+
+
+jobs:
+  test:
+    name: Tests on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Matrix defines parallel job combinations
+      matrix:
+        node-version: [14, 16, 18]
+
+    steps:
+      # Step 1: Checkout repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js based on matrix value
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Step 3: Cache npm dependencies (shared across runs)
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-${{ matrix.node-version }}-
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: npm test
