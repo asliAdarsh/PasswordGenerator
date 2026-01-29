@@ -1,31 +1,44 @@
-name: Cache npm dependencies
+name: CI with Matrix Strategy
 
-on: push
+on:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
-  build:
+  test:
+    name: Tests on Node ${{ matrix.node-version }}
     runs-on: ubuntu-latest
 
+    strategy:
+      # Matrix defines parallel job combinations
+      matrix:
+        node-version: [14, 16, 18]
+
     steps:
+      # Step 1: Checkout repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # Step 2: Setup Node.js based on matrix value
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ matrix.node-version }}
 
-      # 🔥 Dependency caching step
+      # Step 3: Cache npm dependencies (shared across runs)
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-
+            ${{ runner.os }}-npm-${{ matrix.node-version }}-
 
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Build
-        run: npm run build
+      # Step 5: Run tests
+      - name: Run tests
+        run: npm test
