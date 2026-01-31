@@ -39,10 +39,10 @@ jobs:
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:latest
-            docker stop passwordgenerator || true
-            docker rm passwordgenerator || true
+            docker stop password-generator || true
+            docker rm password-generator || true
             docker run -d \
-              --name passwordgenerator \
+              --name password-generator \
               -p 80:5173 \
               ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:latest
 
