@@ -47,6 +47,7 @@ You can run this app instantly using the public image from Docker Hub:
 
 docker run -d --name password-generator -p 5173:5173 asliadarsh/passwordgenerator
 
+You can check some more docker images tags from https://hub.docker.com/repository/docker/asliadarsh/passwordgenerator 
 
 After running the command, open:
 
