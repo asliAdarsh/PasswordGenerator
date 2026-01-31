@@ -30,8 +30,8 @@ const copyPasswordOnClickboard = () => {
 }
 
   return (
-    <div className='bg-gray-800 min-h-screen flex items-center'>
-      <div className='mx-auto  mt-10 mb-auto shadow-lg rounded-lg px-8 py-3 bg-gray-700 text-orange-500'>
+    <div className='bg-red-800 min-h-screen flex items-center'>
+      <div className='mx-auto  mt-10 mb-auto shadow-lg rounded-lg px-8 py-3 bg-yellow-700 text-orange-500'>
         <h1 className='text-3xl font-bold mb-2 text-center'>Password Generator</h1>
         <div className='flex shadow rounded-lg overflow-hidden mb-4 bg-gray-800'>
           <input 
