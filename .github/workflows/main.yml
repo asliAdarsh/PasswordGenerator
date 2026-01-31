@@ -17,7 +17,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetches full history for better caching/context
+          fetch-depth: 0
 
       # 2. Set up Docker Buildx
       - name: Set up Docker Buildx
@@ -29,7 +29,8 @@ jobs:
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-buildx-
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       # 4. Cache npm dependencies
       - name: Cache npm dependencies
@@ -37,13 +38,14 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
-      # 5. Extract metadata
+      # 5. Extract metadata (FORCE LOWERCASE)
       - name: Extract metadata
         id: meta
         run: |
-          echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_OUTPUT"
+          echo "REPO_NAME=$(echo "${GITHUB_REPOSITORY##*/}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
       # 6. Build dev Docker image
@@ -53,7 +55,7 @@ jobs:
           context: .
           file: Dockerfile.dev
           tags: ${{ steps.meta.outputs.REPO_NAME }}-dev:latest
-          load: true # Load to local Docker daemon for testing
+          load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
 
