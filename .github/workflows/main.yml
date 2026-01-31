@@ -30,3 +30,20 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:latest
             ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:${{ github.sha }}
+
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:latest
+            docker stop passwordgenerator || true
+            docker rm passwordgenerator || true
+            docker run -d \
+              --name passwordgenerator \
+              -p 80:5173 \
+              ${{ secrets.DOCKER_USERNAME }}/passwordgenerator:latest
+
+    
